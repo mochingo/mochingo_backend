@@ -1,8 +1,12 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "moduleResolution": "Node",
-    "module": "CommonJS"
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
   },
-  "exclude": ["node_modules", "dist", "src/scripts"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/scripts"
+  ]
 }
