@@ -20,12 +20,12 @@ import type { IDynamicQR } from '../models/DynamicQR.js';
 // ─── Public URL Helpers ───────────────────────────────────────────────────────
 
 const getDynamicQRBaseUrl = (): string => {
-    const raw = String(env.frontendUrl || 'http://localhost:3000').trim();
+    const raw = String(env.frontendUrl || 'https://www.mochingo.com').trim();
     try {
         const parsed = new URL(raw);
         return `${parsed.protocol}//${parsed.host}`;
     } catch {
-        return 'http://localhost:3000';
+        return 'https://www.mochingo.com';
     }
 };
 

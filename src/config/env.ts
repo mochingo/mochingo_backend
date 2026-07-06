@@ -13,8 +13,8 @@ export const env = {
     mongoUri: process.env.MONGODB_URI as string,
     jwtSecret: process.env.JWT_SECRET as string,
     jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
-    frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
-    corsAllowedOrigins: (process.env.CORS_ALLOWED_ORIGINS || 'http://localhost:3000')
+    frontendUrl: process.env.FRONTEND_URL || 'https://www.mochingo.com',
+    corsAllowedOrigins: (process.env.CORS_ALLOWED_ORIGINS || 'https://www.mochingo.com')
         .split(',')
         .map((o) => o.trim())
         .filter(Boolean),

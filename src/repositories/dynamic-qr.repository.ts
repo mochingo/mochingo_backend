@@ -108,7 +108,7 @@ export class MongoDynamicQRRepository implements IDynamicQRRepository {
                 $addFields: {
                     dynamic_public_url: {
                         $concat: [
-                            process.env.FRONTEND_URL || 'http://localhost:3000',
+                            process.env.FRONTEND_URL || 'https://www.mochingo.com',
                             '/dq/',
                             '$token',
                         ],
