@@ -58,7 +58,7 @@ export class MongoDynamicQRRepository implements IDynamicQRRepository {
 
     async findGroupById(groupId: string): Promise<IDynamicQRGroup | null> {
         if (!mongoose.Types.ObjectId.isValid(groupId)) return null;
-        return DynamicQRGroup.findById(groupId).lean() as Promise<IDynamicQRGroup | null>;
+        return DynamicQRGroup.findById(groupId).lean() as unknown as Promise<IDynamicQRGroup | null>;
     }
 
     async findGroupsPaged(
@@ -70,7 +70,7 @@ export class MongoDynamicQRRepository implements IDynamicQRRepository {
             .sort({ created_at: -1 })
             .skip(skip)
             .limit(limit)
-            .lean() as Promise<IDynamicQRGroup[]>;
+            .lean() as unknown as Promise<IDynamicQRGroup[]>;
     }
 
     async countGroups(query: Record<string, unknown>): Promise<number> {
@@ -151,18 +151,18 @@ export class MongoDynamicQRRepository implements IDynamicQRRepository {
 
     async findById(id: string): Promise<IDynamicQR | null> {
         if (!mongoose.Types.ObjectId.isValid(id)) return null;
-        return DynamicQR.findById(id).lean() as Promise<IDynamicQR | null>;
+        return DynamicQR.findById(id).lean() as unknown as Promise<IDynamicQR | null>;
     }
 
     async findByToken(token: string): Promise<IDynamicQR | null> {
-        return DynamicQR.findOne({ token: token.trim().toLowerCase() }).lean() as Promise<IDynamicQR | null>;
+        return DynamicQR.findOne({ token: token.trim().toLowerCase() }).lean() as unknown as Promise<IDynamicQR | null>;
     }
 
     async findByBatchId(batchId: string): Promise<IDynamicQR[]> {
         const query = mongoose.Types.ObjectId.isValid(batchId)
             ? { $or: [{ group_id: new mongoose.Types.ObjectId(batchId) }, { batch_id: batchId }] }
             : { batch_id: batchId };
-        return DynamicQR.find(query).sort({ batch_sequence: 1, created_at: 1 }).lean() as Promise<IDynamicQR[]>;
+        return DynamicQR.find(query).sort({ batch_sequence: 1, created_at: 1 }).lean() as unknown as Promise<IDynamicQR[]>;
     }
 
     async findByTokenExists(token: string): Promise<boolean> {
@@ -172,7 +172,7 @@ export class MongoDynamicQRRepository implements IDynamicQRRepository {
 
     async updateById(id: string, update: Record<string, unknown>): Promise<IDynamicQR | null> {
         if (!mongoose.Types.ObjectId.isValid(id)) return null;
-        return DynamicQR.findByIdAndUpdate(id, update, { new: true }).lean() as Promise<IDynamicQR | null>;
+        return DynamicQR.findByIdAndUpdate(id, update, { new: true }).lean() as unknown as Promise<IDynamicQR | null>;
     }
 
     async updateByToken(token: string, update: Record<string, unknown>): Promise<IDynamicQR | null> {
@@ -180,7 +180,7 @@ export class MongoDynamicQRRepository implements IDynamicQRRepository {
             { token: token.trim().toLowerCase() },
             update,
             { new: true }
-        ).lean() as Promise<IDynamicQR | null>;
+        ).lean() as unknown as Promise<IDynamicQR | null>;
     }
 
     async updateAssignableByToken(token: string, update: Record<string, unknown>): Promise<IDynamicQR | null> {
@@ -198,7 +198,7 @@ export class MongoDynamicQRRepository implements IDynamicQRRepository {
             },
             update,
             { new: true }
-        ).lean() as Promise<IDynamicQR | null>;
+        ).lean() as unknown as Promise<IDynamicQR | null>;
     }
 
     async updateManyByIds(
