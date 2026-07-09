@@ -11,6 +11,7 @@ export interface CreateDynamicQRDto {
     count: number;
     start_from: number;
     manual_redirect_url?: string | null;
+    category_id?: string | null;
     /** Optional param name appended to URL for bulk numbered QRs */
     param_name?: string;
     value_prefix?: string;
@@ -88,6 +89,7 @@ export interface DynamicQRGroupInventoryItemDto {
 export interface BatchResponseDto {
     batch_id: string;
     batch_label: string;
+    category_id?: string | null;
     qr_count: number;
     filtered_count: number;
     dynamic_qrs: DynamicQRResponseDto[];
@@ -131,6 +133,7 @@ export const validateCreateDynamicQRDto = (body: unknown): CreateDynamicQRDto =>
         count,
         start_from,
         manual_redirect_url: (b?.manual_redirect_url as string | null) ?? null,
+        category_id: (b?.category_id as string | null) ?? null,
         param_name: String(b?.param_name || '').trim() || undefined,
         value_prefix: String(b?.value_prefix || '').trim() || undefined,
         value_separator: String(b?.value_separator || '').trim() || '%',

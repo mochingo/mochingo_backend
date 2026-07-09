@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import { env } from './config/env.js';
 import authRoutes from './routes/auth.routes.js';
 import adminQRRoutes from './routes/admin-qr.routes.js';
+import adminQRCategoryRoutes from './routes/admin-qr-category.routes.js';
 import publicQRRoutes from './routes/public-qr.routes.js';
 import { errorMiddleware } from './middleware/error.middleware.js';
 
@@ -41,6 +42,7 @@ app.get('/api/health', (_req, res) => {
 // ─── Routes ──────────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/admin/qr', adminQRRoutes);
+app.use('/api/admin/qr/categories', adminQRCategoryRoutes);
 app.use('/api/qr', publicQRRoutes);
 
 // ─── 404 ─────────────────────────────────────────────────────────────────────

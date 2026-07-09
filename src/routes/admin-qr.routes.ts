@@ -16,6 +16,7 @@ router.post('/dynamic/scan-assign', dynamicQRController.scanAssignDynamicQR);
 
 // Batch operations
 router.get('/dynamic/batches/:batchId', dynamicQRController.getDynamicQRBatch);
+router.patch('/dynamic/batches/:batchId/category', dynamicQRController.updateDynamicQRBatchCategory);
 router.post('/dynamic/batches/:batchId/apply-template', dynamicQRController.applyDynamicQRTemplateToBatch);
 
 // Single QR operations

@@ -60,6 +60,20 @@ export const getDynamicQRBatch = async (req: Request, res: Response, next: NextF
     }
 };
 
+// ─── Admin: Update Batch Category ────────────────────────────────────────────
+
+export const updateDynamicQRBatchCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { batchId } = req.params;
+        const { category_id } = req.body;
+        if (!batchId) { sendError(res, 'Batch ID is required', null, 400); return; }
+        await dynamicQRService.updateBatchCategory(batchId, category_id || null);
+        sendSuccess(res, null, 'Batch category updated');
+    } catch (error) {
+        sendError(res, (error as Error).message, null, 400);
+    }
+};
+
 // ─── Admin: Update Single QR ─────────────────────────────────────────────────
 
 export const updateDynamicQR = async (req: Request, res: Response, next: NextFunction): Promise<void> => {

@@ -142,6 +142,7 @@ export interface IDynamicQRService {
     create(dto: CreateDynamicQRDto, adminId?: string): Promise<{ batch_id: string; batch_label: string; created_count: number; dynamic_qrs: DynamicQRResponseDto[] }>;
     getById(id: string): Promise<DynamicQRResponseDto>;
     getBatch(batchId: string, search: string): Promise<BatchResponseDto>;
+    updateBatchCategory(batchId: string, categoryId: string | null): Promise<void>;
     update(id: string, dto: UpdateDynamicQRDto): Promise<DynamicQRResponseDto>;
     applyTemplate(batchId: string, dto: ApplyTemplateDto): Promise<BatchResponseDto>;
     scanAssign(dto: ScanAssignDto): Promise<{ qr: DynamicQRResponseDto; alreadyAssigned: boolean }>;
@@ -197,6 +198,7 @@ export class DynamicQRService implements IDynamicQRService {
         const group = await dynamicQRRepository.createGroup({
             label: dto.label,
             qr_count: dto.count,
+            category_id: dto.category_id ? new mongoose.Types.ObjectId(dto.category_id) : undefined,
             created_by: adminId ? new mongoose.Types.ObjectId(adminId) : undefined,
         });
         const batchId = String((group as any)._id);
@@ -276,10 +278,21 @@ export class DynamicQRService implements IDynamicQRService {
         return {
             batch_id: batchId,
             batch_label: group.label,
+            category_id: (group as any).category_id ? String((group as any).category_id) : null,
             qr_count: records.length,
             filtered_count: filtered.length,
             dynamic_qrs: filtered.map((r) => mapQR(r as any)),
         };
+    }
+
+    async updateBatchCategory(batchId: string, categoryId: string | null): Promise<void> {
+        const group = await dynamicQRRepository.findGroupById(batchId);
+        if (!group) throw new Error('Dynamic QR group not found');
+
+        await mongoose.connection.collection('dynamic_qr_groups').updateOne(
+            { _id: new mongoose.Types.ObjectId(batchId) },
+            { $set: { category_id: categoryId ? new mongoose.Types.ObjectId(categoryId) : null } }
+        );
     }
 
     async update(id: string, dto: UpdateDynamicQRDto): Promise<DynamicQRResponseDto> {
