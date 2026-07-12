@@ -1,0 +1,42 @@
+import { Request, Response, NextFunction } from 'express';
+import { consumerQRService } from '../services/consumer-qr.service.js';
+import { validateClaimQRDto } from '../dto/consumer-qr.dto.js';
+import { sendSuccess, sendError } from '../utils/response.util.js';
+
+export const claimQR = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const userId = (req as any).user.id;
+        const dto = validateClaimQRDto(req.body);
+        await consumerQRService.claimQR(userId, dto);
+        sendSuccess(res, null, 'QR successfully claimed and assigned');
+    } catch (error) {
+        sendError(res, (error as Error).message, null, 400);
+    }
+};
+
+export const getMyQRs = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const userId = (req as any).user.id;
+        const qrs = await consumerQRService.getMyQRs(userId);
+        sendSuccess(res, { qrs });
+    } catch (error) {
+        sendError(res, (error as Error).message, null, 400);
+    }
+};
+
+export const updateMyQR = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const userId = (req as any).user.id;
+        const qrId = req.params.id;
+        const { destination_url } = req.body;
+        
+        if (!destination_url || typeof destination_url !== 'string') {
+            throw new Error('Destination URL is required');
+        }
+
+        await consumerQRService.updateMyQR(userId, qrId, destination_url);
+        sendSuccess(res, null, 'QR successfully updated');
+    } catch (error) {
+        sendError(res, (error as Error).message, null, 400);
+    }
+};

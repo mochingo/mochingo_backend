@@ -19,4 +19,5 @@ export const env = {
         .map((o) => o.trim())
         .filter(Boolean),
     nodeEnv: process.env.NODE_ENV || 'development',
+    googleClientId: process.env.GOOGLE_CLIENT_ID || '',
 } as const;

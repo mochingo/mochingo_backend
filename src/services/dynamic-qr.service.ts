@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { dynamicQRRepository } from '../repositories/dynamic-qr.repository.js';
+import { dynamicQRCategoryRepository } from '../repositories/dynamic-qr-category.repository.js';
 import { env } from '../config/env.js';
 import { generateDynamicQRToken, normalizeUrl, normalizeIdValue } from '../utils/crypto.util.js';
 import type {
@@ -462,10 +463,32 @@ export class DynamicQRService implements IDynamicQRService {
             };
         }
         await dynamicQRRepository.incrementScanByToken(token);
+
+        let resolvedUrl = buildResolvedUrl(qr);
+
+        if (qr.status === 'unassigned') {
+            const frontendBaseUrl = process.env.FRONTEND_URL || getDynamicQRBaseUrl();
+            if (qr.group_id) {
+                const group = await dynamicQRRepository.findGroupById(String(qr.group_id));
+                if (group && group.category_id) {
+                    const category = await dynamicQRCategoryRepository.findById(String(group.category_id));
+                    if (category) {
+                        resolvedUrl = `${frontendBaseUrl}/${category.slug}?token=${qr.token}`;
+                        return {
+                            token,
+                            status: qr.status,
+                            redirect_url: resolvedUrl,
+                        };
+                    }
+                }
+            }
+            resolvedUrl = `${frontendBaseUrl}/setup?token=${qr.token}`;
+        }
+
         return {
             token,
             status: qr.status,
-            redirect_url: buildResolvedUrl(qr),
+            redirect_url: resolvedUrl,
         };
     }
 }

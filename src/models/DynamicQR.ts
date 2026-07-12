@@ -14,6 +14,7 @@ export interface IDynamicQR extends Document {
     status: DynamicQRStatus;
     manual_redirect_url?: string | null;
     id_value?: string | null;                  // optional display/tracking identifier
+    owner_id?: mongoose.Types.ObjectId | null;
     created_by?: mongoose.Types.ObjectId | null;
     assigned_at?: Date | null;
     last_reassigned_at?: Date | null;
@@ -87,6 +88,12 @@ const DynamicQRSchema = new Schema<IDynamicQR>(
             type: Schema.Types.ObjectId,
             ref: 'Admin',
             default: null,
+        },
+        owner_id: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            default: null,
+            index: true,
         },
         assigned_at: {
             type: Date,
