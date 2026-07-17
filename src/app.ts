@@ -9,6 +9,7 @@ import adminQRCategoryRoutes from './routes/admin-qr-category.routes.js';
 import consumerAuthRoutes from './routes/consumer-auth.routes.js';
 import consumerQRRoutes from './routes/consumer-qr.routes.js';
 import publicQRRoutes from './routes/public-qr.routes.js';
+import petProfileRoutes from './routes/pet-profile.routes.js';
 import { errorMiddleware } from './middleware/error.middleware.js';
 
 const app = express();
@@ -47,6 +48,7 @@ app.use('/api/admin/qr/categories', adminQRCategoryRoutes);
 app.use('/api/admin/qr', adminQRRoutes);
 app.use('/api/consumer/auth', consumerAuthRoutes);
 app.use('/api/consumer/qr', consumerQRRoutes);
+app.use('/api/pet-profile', petProfileRoutes);
 app.use('/api/qr', publicQRRoutes);
 
 // ─── 404 ─────────────────────────────────────────────────────────────────────
