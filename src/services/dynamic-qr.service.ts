@@ -467,7 +467,7 @@ export class DynamicQRService implements IDynamicQRService {
         let resolvedUrl = buildResolvedUrl(qr);
 
         if (qr.status === 'unassigned') {
-            const frontendBaseUrl = process.env.FRONTEND_URL || getDynamicQRBaseUrl();
+            const frontendBaseUrl = getDynamicQRBaseUrl();
             if (qr.group_id) {
                 const group = await dynamicQRRepository.findGroupById(String(qr.group_id));
                 if (group && group.category_id) {
