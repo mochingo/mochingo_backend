@@ -47,18 +47,18 @@ export const listUsers = async (req: Request, res: Response, next: NextFunction)
         ]);
 
         if (!users.length) {
-            return sendSuccess(res, { users: [], total, page, limit, total_pages: Math.ceil(total / limit) });
+            sendSuccess(res, { users: [], total, page, limit, total_pages: Math.ceil(total / limit) });
+            return;
         }
 
         // Get QR counts per user in one aggregation
         const userIds = users.map(u => new mongoose.Types.ObjectId(String(u._id)));
-        const qrCounts: { _id: mongoose.Types.ObjectId; qr_count: number; scan_total: number }[] = await DynamicQR.aggregate([
+        const qrCounts: { _id: mongoose.Types.ObjectId; qr_count: number }[] = await DynamicQR.aggregate([
             { $match: { owner_id: { $in: userIds } } },
             {
                 $group: {
                     _id: '$owner_id',
                     qr_count: { $sum: 1 },
-                    scan_total: { $sum: '$scan_count' },
                 },
             },
         ]);
@@ -75,7 +75,6 @@ export const listUsers = async (req: Request, res: Response, next: NextFunction)
                 business: u.business || null,
                 profile_picture: u.profile_picture || null,
                 qr_count: counts?.qr_count ?? 0,
-                scan_total: counts?.scan_total ?? 0,
                 created_at: new Date(u.created_at).toISOString(),
                 updated_at: new Date(u.updated_at).toISOString(),
             };
@@ -99,7 +98,8 @@ export const getUserDetails = async (req: Request, res: Response, next: NextFunc
     try {
         const { userId } = req.params;
         if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return sendError(res, 'Invalid user ID', null, 400);
+            sendError(res, 'Invalid user ID', null, 400);
+            return;
         }
 
         const user = await User.findById(userId)
@@ -107,12 +107,13 @@ export const getUserDetails = async (req: Request, res: Response, next: NextFunc
             .lean();
 
         if (!user) {
-            return sendError(res, 'User not found', null, 404);
+            sendError(res, 'User not found', null, 404);
+            return;
         }
 
         const base = getFrontendBase();
         const qrs = await DynamicQR.find({ owner_id: new mongoose.Types.ObjectId(userId) })
-            .select('token label status manual_redirect_url scan_count last_scanned_at assigned_at created_at batch_label')
+            .select('token label status manual_redirect_url assigned_at created_at batch_label')
             .sort({ assigned_at: -1 })
             .lean();
 
@@ -124,8 +125,6 @@ export const getUserDetails = async (req: Request, res: Response, next: NextFunc
             status: q.status,
             manual_redirect_url: q.manual_redirect_url || null,
             qr_url: `${base}/dq/${encodeURIComponent(q.token)}`,
-            scan_count: q.scan_count ?? 0,
-            last_scanned_at: q.last_scanned_at ? new Date(q.last_scanned_at).toISOString() : null,
             assigned_at: q.assigned_at ? new Date(q.assigned_at).toISOString() : null,
         }));
 
@@ -143,7 +142,6 @@ export const getUserDetails = async (req: Request, res: Response, next: NextFunc
             },
             qrs: mappedQRs,
             qr_count: mappedQRs.length,
-            scan_total: mappedQRs.reduce((s, q) => s + q.scan_count, 0),
         });
     } catch (error) {
         sendError(res, (error as Error).message, null, 500);

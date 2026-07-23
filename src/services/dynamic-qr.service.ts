@@ -462,7 +462,6 @@ export class DynamicQRService implements IDynamicQRService {
                 redirect_url: `${getDynamicQRBaseUrl()}/`,
             };
         }
-        await dynamicQRRepository.incrementScanByToken(token);
 
         let resolvedUrl = buildResolvedUrl(qr);
 
