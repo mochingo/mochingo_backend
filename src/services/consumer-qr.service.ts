@@ -19,15 +19,39 @@ export class ConsumerQRService {
             throw new Error('User not found');
         }
 
-        // Update user's mobile number if provided and not yet set
+        let dirty = false;
+
+        // Update name if not yet set
+        if (dto.name && !user.name) {
+            user.name = dto.name;
+            dirty = true;
+        }
+
+        // Update mobile_number if not yet set
         if (dto.mobile_number && !user.mobile_number) {
             user.mobile_number = dto.mobile_number;
+            dirty = true;
+        }
+
+        // Update place if not yet set
+        if (dto.place && !user.place) {
+            user.place = dto.place;
+            dirty = true;
+        }
+
+        // Business is optional — always update if provided
+        if (dto.business !== undefined) {
+            user.business = dto.business || undefined;
+            dirty = true;
+        }
+
+        if (dirty) {
             await user.save();
         }
 
         // Assign the QR
         const normalizedUrl = normalizeUrl(dto.destination_url);
-        
+
         await dynamicQRRepository.updateById(String(qr._id), {
             status: 'assigned',
             manual_redirect_url: normalizedUrl,
@@ -61,7 +85,7 @@ export class ConsumerQRService {
         const updated = await dynamicQRRepository.updateById(qrId, {
             manual_redirect_url: normalizedUrl,
         });
-        
+
         return updated;
     }
 }

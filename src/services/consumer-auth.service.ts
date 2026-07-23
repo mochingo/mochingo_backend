@@ -11,6 +11,8 @@ export interface UserResponseDto {
     name: string;
     email: string;
     mobile_number?: string;
+    place?: string;
+    business?: string;
     profile_picture?: string;
 }
 
@@ -77,6 +79,8 @@ export class ConsumerAuthService {
             name: user.name,
             email: user.email,
             mobile_number: user.mobile_number,
+            place: user.place,
+            business: user.business,
             profile_picture: user.profile_picture,
         };
 
@@ -91,6 +95,8 @@ export class ConsumerAuthService {
             name: user.name,
             email: user.email,
             mobile_number: user.mobile_number,
+            place: user.place,
+            business: user.business,
             profile_picture: user.profile_picture,
         };
     }

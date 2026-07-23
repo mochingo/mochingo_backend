@@ -6,6 +6,7 @@ import { env } from './config/env.js';
 import authRoutes from './routes/auth.routes.js';
 import adminQRRoutes from './routes/admin-qr.routes.js';
 import adminQRCategoryRoutes from './routes/admin-qr-category.routes.js';
+import adminUsersRoutes from './routes/admin-users.routes.js';
 import consumerAuthRoutes from './routes/consumer-auth.routes.js';
 import consumerQRRoutes from './routes/consumer-qr.routes.js';
 import publicQRRoutes from './routes/public-qr.routes.js';
@@ -46,6 +47,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/admin/qr/categories', adminQRCategoryRoutes);
 app.use('/api/admin/qr', adminQRRoutes);
+app.use('/api/admin/users', adminUsersRoutes);
 app.use('/api/consumer/auth', consumerAuthRoutes);
 app.use('/api/consumer/qr', consumerQRRoutes);
 app.use('/api/pet-profile', petProfileRoutes);

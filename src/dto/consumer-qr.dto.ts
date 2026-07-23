@@ -1,7 +1,10 @@
 export interface ClaimQRDto {
     token: string;
     destination_url: string;
+    name?: string;
     mobile_number?: string;
+    place?: string;
+    business?: string;
 }
 
 export const validateClaimQRDto = (data: any): ClaimQRDto => {
@@ -14,6 +17,9 @@ export const validateClaimQRDto = (data: any): ClaimQRDto => {
     return {
         token: data.token,
         destination_url: data.destination_url,
-        mobile_number: data.mobile_number,
+        name: data.name?.trim() || undefined,
+        mobile_number: data.mobile_number?.trim() || undefined,
+        place: data.place?.trim() || undefined,
+        business: data.business?.trim() || undefined,
     };
 };

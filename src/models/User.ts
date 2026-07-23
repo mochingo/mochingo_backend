@@ -5,6 +5,8 @@ export interface IUser extends Document {
     email: string;
     google_id: string;
     mobile_number?: string;
+    place?: string;
+    business?: string;
     profile_picture?: string;
     created_at: Date;
     updated_at: Date;
@@ -33,10 +35,18 @@ const UserSchema = new Schema<IUser>(
             type: String,
             trim: true,
         },
+        place: {
+            type: String,
+            trim: true,
+        },
+        business: {
+            type: String,
+            trim: true,
+        },
         profile_picture: {
             type: String,
             trim: true,
-        }
+        },
     },
     {
         timestamps: {
