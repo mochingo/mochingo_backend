@@ -4,7 +4,9 @@ import { sendError } from '../utils/response.util.js';
 
 export const userAuth = (req: Request, res: Response, next: NextFunction): void => {
     try {
-        const token = req.cookies?.mochingo_consumer_token || req.headers.authorization?.split(' ')[1];
+        const authHeaderToken = req.headers.authorization?.split(' ')[1];
+        const cookieToken = req.cookies?.mochingo_consumer_token;
+        const token = authHeaderToken || cookieToken;
 
         if (!token) {
             sendError(res, 'Authentication required', null, 401);
