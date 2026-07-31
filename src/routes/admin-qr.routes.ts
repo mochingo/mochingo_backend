@@ -7,6 +7,9 @@ const router = Router();
 // All admin QR routes require authentication
 router.use(adminAuth);
 
+// Analytics
+router.get('/dynamic/analytics', dynamicQRController.getAnalytics);
+
 // Dynamic QR Groups (listing + creation)
 router.get('/dynamic', dynamicQRController.listDynamicQRs);
 router.post('/dynamic', dynamicQRController.createDynamicQR);

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import DynamicQRModel from '../models/DynamicQR.js';
 import { dynamicQRRepository } from '../repositories/dynamic-qr.repository.js';
 import { dynamicQRCategoryRepository } from '../repositories/dynamic-qr-category.repository.js';
 import { env } from '../config/env.js';
@@ -493,6 +494,44 @@ export class DynamicQRService implements IDynamicQRService {
             qr: mapQR(qr as any),
             category_slug,
             category_name,
+        };
+    }
+    async getAnalytics(month?: number, year?: number): Promise<any> {
+        // Aggregate totals
+        const total_assigned = await DynamicQRModel.countDocuments({ status: 'assigned' });
+        
+        let matchStage: any = {
+            status: 'assigned',
+            assigned_at: { $exists: true, $ne: null }
+        };
+
+        if (month !== undefined && year !== undefined) {
+            // month is 1-indexed (1 = Jan, 12 = Dec)
+            const startDate = new Date(year, month - 1, 1);
+            const endDate = new Date(year, month, 1);
+            matchStage.assigned_at = { $gte: startDate, $lt: endDate };
+        } else {
+            // Default to last 30 days if no month/year is provided
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            matchStage.assigned_at = { $gte: thirtyDaysAgo };
+        }
+        
+        const daily_assignments = await DynamicQRModel.aggregate([
+            { $match: matchStage },
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$assigned_at" } },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { _id: 1 } },
+            { $project: { _id: 0, date: "$_id", count: 1 } }
+        ]);
+
+        return {
+            total_assigned,
+            daily_assignments
         };
     }
 }

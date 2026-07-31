@@ -143,3 +143,16 @@ export const resolveDynamicQR = async (req: Request, res: Response, next: NextFu
         sendError(res, (error as Error).message);
     }
 };
+// ─── Admin: Analytics ─────────────────────────────────────────────────────────
+
+export const getAnalytics = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const month = req.query.month ? Number(req.query.month) : undefined;
+        const year = req.query.year ? Number(req.query.year) : undefined;
+        
+        const result = await dynamicQRService.getAnalytics(month, year);
+        sendSuccess(res, result);
+    } catch (error) {
+        sendError(res, (error as Error).message);
+    }
+};
