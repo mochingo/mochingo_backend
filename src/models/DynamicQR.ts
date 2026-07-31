@@ -16,6 +16,7 @@ export interface IDynamicQR extends Document {
     id_value?: string | null;                  // optional display/tracking identifier
     owner_id?: mongoose.Types.ObjectId | null;
     created_by?: mongoose.Types.ObjectId | null;
+    assigned_by?: mongoose.Types.ObjectId | null;
     assigned_at?: Date | null;
     last_reassigned_at?: Date | null;
     scan_count: number;
@@ -85,6 +86,11 @@ const DynamicQRSchema = new Schema<IDynamicQR>(
             trim: true,
         },
         created_by: {
+            type: Schema.Types.ObjectId,
+            ref: 'Admin',
+            default: null,
+        },
+        assigned_by: {
             type: Schema.Types.ObjectId,
             ref: 'Admin',
             default: null,

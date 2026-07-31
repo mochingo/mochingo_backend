@@ -5,7 +5,10 @@ import Admin, { IAdmin } from '../models/Admin.js';
 export interface IAdminRepository {
     findByEmail(email: string): Promise<IAdmin | null>;
     findById(id: string): Promise<IAdmin | null>;
+    find(filter: Partial<IAdmin>): Promise<IAdmin[]>;
     create(data: Partial<IAdmin>): Promise<IAdmin>;
+    updateById(id: string, data: Partial<IAdmin>): Promise<IAdmin | null>;
+    deleteById(id: string): Promise<boolean>;
     existsByEmail(email: string): Promise<boolean>;
 }
 
@@ -20,8 +23,21 @@ export class MongoAdminRepository implements IAdminRepository {
         return Admin.findById(id).lean() as Promise<IAdmin | null>;
     }
 
+    async find(filter: Partial<IAdmin>): Promise<IAdmin[]> {
+        return Admin.find(filter).lean() as Promise<IAdmin[]>;
+    }
+
     async create(data: Partial<IAdmin>): Promise<IAdmin> {
         return Admin.create(data);
+    }
+
+    async updateById(id: string, data: Partial<IAdmin>): Promise<IAdmin | null> {
+        return Admin.findByIdAndUpdate(id, data, { new: true }).lean() as Promise<IAdmin | null>;
+    }
+
+    async deleteById(id: string): Promise<boolean> {
+        const result = await Admin.findByIdAndDelete(id);
+        return !!result;
     }
 
     async existsByEmail(email: string): Promise<boolean> {

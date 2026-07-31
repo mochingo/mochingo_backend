@@ -11,6 +11,8 @@ import consumerAuthRoutes from './routes/consumer-auth.routes.js';
 import consumerQRRoutes from './routes/consumer-qr.routes.js';
 import publicQRRoutes from './routes/public-qr.routes.js';
 import petProfileRoutes from './routes/pet-profile.routes.js';
+import staffRoutes from './routes/staff.routes.js';
+import salesRoutes from './routes/sales.routes.js';
 import { errorMiddleware } from './middleware/error.middleware.js';
 
 const app = express();
@@ -52,6 +54,8 @@ app.use('/api/consumer/auth', consumerAuthRoutes);
 app.use('/api/consumer/qr', consumerQRRoutes);
 app.use('/api/pet-profile', petProfileRoutes);
 app.use('/api/qr', publicQRRoutes);
+app.use('/api/admin/staff', staffRoutes);
+app.use('/api/admin/sales', salesRoutes);
 
 // ─── 404 ─────────────────────────────────────────────────────────────────────
 app.use((_req, res) => {

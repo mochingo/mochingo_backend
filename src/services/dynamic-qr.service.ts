@@ -464,23 +464,25 @@ export class DynamicQRService implements IDynamicQRService {
         }
 
         let resolvedUrl = buildResolvedUrl(qr);
+        let category_slug = undefined;
+        let category_name = undefined;
 
-        if (qr.status === 'unassigned') {
-            const frontendBaseUrl = getDynamicQRBaseUrl();
-            if (qr.group_id) {
-                const group = await dynamicQRRepository.findGroupById(String(qr.group_id));
-                if (group && group.category_id) {
-                    const category = await dynamicQRCategoryRepository.findById(String(group.category_id));
-                    if (category) {
+        const frontendBaseUrl = getDynamicQRBaseUrl();
+        if (qr.group_id) {
+            const group = await dynamicQRRepository.findGroupById(String(qr.group_id));
+            if (group && group.category_id) {
+                const category = await dynamicQRCategoryRepository.findById(String(group.category_id));
+                if (category) {
+                    category_slug = category.slug;
+                    category_name = category.name;
+                    if (qr.status === 'unassigned') {
                         resolvedUrl = `${frontendBaseUrl}/${category.slug}?token=${qr.token}`;
-                        return {
-                            token,
-                            status: qr.status,
-                            redirect_url: resolvedUrl,
-                        };
                     }
                 }
             }
+        }
+        
+        if (qr.status === 'unassigned' && !category_slug) {
             resolvedUrl = `${frontendBaseUrl}/setup?token=${qr.token}`;
         }
 
@@ -488,6 +490,9 @@ export class DynamicQRService implements IDynamicQRService {
             token,
             status: qr.status,
             redirect_url: resolvedUrl,
+            qr: mapQR(qr as any),
+            category_slug,
+            category_name,
         };
     }
 }

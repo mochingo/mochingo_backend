@@ -107,6 +107,9 @@ export interface ResolveQRResponseDto {
     token: string;
     status: 'assigned' | 'unassigned' | 'disabled' | 'missing';
     redirect_url: string;
+    qr?: DynamicQRResponseDto;
+    category_slug?: string;
+    category_name?: string;
 }
 
 // ─── Query DTOs ──────────────────────────────────────────────────────────────
