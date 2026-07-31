@@ -24,7 +24,7 @@ export class MongoAdminRepository implements IAdminRepository {
     }
 
     async find(filter: Partial<IAdmin>): Promise<IAdmin[]> {
-        return Admin.find(filter).lean() as Promise<IAdmin[]>;
+        return Admin.find(filter as any).lean() as unknown as Promise<IAdmin[]>;
     }
 
     async create(data: Partial<IAdmin>): Promise<IAdmin> {

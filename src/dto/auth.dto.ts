@@ -11,7 +11,7 @@ export interface AdminResponseDto {
     id: string;
     name: string;
     email: string;
-    role: 'super_admin' | 'admin';
+    role: 'super_admin' | 'admin' | 'sales_staff';
     is_active: boolean;
 }
 
