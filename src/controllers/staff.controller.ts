@@ -45,3 +45,13 @@ export const deleteStaff = async (req: Request, res: Response): Promise<void> =>
         sendError(res, error.message, null, 400);
     }
 };
+
+export const getStaffAnalytics = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const analytics = await staffService.getStaffAnalytics(id);
+        sendSuccess(res, analytics);
+    } catch (error: any) {
+        sendError(res, error.message, null, 400);
+    }
+};

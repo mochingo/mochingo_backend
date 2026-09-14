@@ -76,12 +76,12 @@ export class SalesService {
             status: 'assigned',
             manual_redirect_url: normalizedUrl,
             owner_id: user ? user._id : null,
-            assigned_by: staffId,
         };
 
         if (isReassign) {
             updateData.last_reassigned_at = new Date();
         } else {
+            updateData.assigned_by = staffId;
             updateData.assigned_at = new Date();
         }
 

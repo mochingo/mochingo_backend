@@ -65,6 +65,20 @@ export class StaffService {
         if (!deleted) throw new Error('Staff not found');
     }
 
+    async getStaffAnalytics(staffId: string): Promise<any> {
+        const DynamicQR = await import('../models/DynamicQR.js').then(m => m.default);
+        const qrs = await DynamicQR.find({ assigned_by: staffId })
+            .populate('owner_id', 'name mobile_number place business')
+            .sort({ assigned_at: -1, last_reassigned_at: -1 })
+            .lean()
+            .exec();
+            
+        return {
+            total_assigned: qrs.length,
+            assigned_qrs: qrs
+        };
+    }
+
     private mapToDto(staff: IAdmin): StaffResponseDto {
         return {
             id: String((staff as any)._id),
