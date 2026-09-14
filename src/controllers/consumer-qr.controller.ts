@@ -17,7 +17,8 @@ export const claimQR = async (req: Request, res: Response, next: NextFunction): 
 export const getMyQRs = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId = (req as any).user.id;
-        const qrs = await consumerQRService.getMyQRs(userId);
+        const searchQuery = req.query.q as string | undefined;
+        const qrs = await consumerQRService.getMyQRs(userId, searchQuery);
         sendSuccess(res, { qrs });
     } catch (error) {
         sendError(res, (error as Error).message, null, 400);

@@ -35,7 +35,7 @@ export interface IDynamicQRRepository {
     findById(id: string): Promise<IDynamicQR | null>;
     findByToken(token: string): Promise<IDynamicQR | null>;
     findByBatchId(batchId: string): Promise<IDynamicQR[]>;
-    findByOwnerId(ownerId: string): Promise<IDynamicQR[]>;
+    findByOwnerId(ownerId: string, searchQuery?: string): Promise<IDynamicQR[]>;
     findByTokenExists(token: string): Promise<boolean>;
     updateById(id: string, update: Record<string, unknown>): Promise<IDynamicQR | null>;
     updateByToken(token: string, update: Record<string, unknown>): Promise<IDynamicQR | null>;
@@ -166,9 +166,23 @@ export class MongoDynamicQRRepository implements IDynamicQRRepository {
         return DynamicQR.find(query).sort({ batch_sequence: 1, created_at: 1 }).lean() as unknown as Promise<IDynamicQR[]>;
     }
 
-    async findByOwnerId(ownerId: string): Promise<IDynamicQR[]> {
+    async findByOwnerId(ownerId: string, searchQuery?: string): Promise<IDynamicQR[]> {
         if (!mongoose.Types.ObjectId.isValid(ownerId)) return [];
-        return DynamicQR.find({ owner_id: new mongoose.Types.ObjectId(ownerId) })
+        const query: any = { owner_id: new mongoose.Types.ObjectId(ownerId) };
+        if (searchQuery) {
+            const trimmed = String(searchQuery).trim();
+            if (trimmed) {
+                const safeRegex = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(safeRegex, 'i');
+                query.$or = [
+                    { token: { $regex: regex } },
+                    { label: { $regex: regex } },
+                    { manual_redirect_url: { $regex: regex } },
+                    { id_value: { $regex: regex } }
+                ];
+            }
+        }
+        return DynamicQR.find(query)
             .sort({ updated_at: -1 })
             .lean() as unknown as Promise<IDynamicQR[]>;
     }

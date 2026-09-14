@@ -60,8 +60,8 @@ export class ConsumerQRService {
         });
     }
 
-    async getMyQRs(userId: string) {
-        const qrs = await dynamicQRRepository.findByOwnerId(userId);
+    async getMyQRs(userId: string, searchQuery?: string) {
+        const qrs = await dynamicQRRepository.findByOwnerId(userId, searchQuery);
         return qrs.map(qr => ({
             id: String(qr._id),
             token: qr.token,
