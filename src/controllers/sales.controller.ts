@@ -7,8 +7,8 @@ export const assignQR = async (req: Request, res: Response): Promise<void> => {
         const { qr_token, mobile_number, name, place, business, destination_url, isReassign } = req.body;
         const staffId = (req as any).admin?.id;
         
-        if (!qr_token || !mobile_number || !name || !place || !destination_url) {
-            sendError(res, 'Missing required fields', null, 400);
+        if (!qr_token || !destination_url) {
+            sendError(res, 'Missing required fields: qr_token and destination_url', null, 400);
             return;
         }
 

@@ -30,38 +30,43 @@ export class SalesService {
             // Actually, for now, we'll allow it if they are logged in.
         }
 
-        // Find existing user by mobile number or create a new one
-        let user = await User.findOne({ mobile_number: mobile_number.trim() });
-        
-        if (!user) {
-            // Create a new user for the customer
-            user = await User.create({
-                name: name.trim(),
-                mobile_number: mobile_number.trim(),
-                place: place.trim(),
-                business: business ? business.trim() : undefined,
-                // Email is required in the User schema? Let's check User.ts, email is required!
-                // Wait, if a customer is created by sales, they might not provide an email.
-                // We'll generate a placeholder email if missing.
-                email: `customer_${Date.now()}@mochingo.local`,
-            });
-        } else {
-            // Update existing user if fields are missing
-            let dirty = false;
-            if (!user.name && name) {
-                user.name = name.trim();
-                dirty = true;
+        let user = null;
+        const normalizedMobile = mobile_number ? mobile_number.trim() : '';
+        const normalizedName = name ? name.trim() : '';
+        const normalizedPlace = place ? place.trim() : '';
+        const normalizedBusiness = business ? business.trim() : '';
+
+        if (normalizedMobile || normalizedName || normalizedPlace || normalizedBusiness) {
+            if (normalizedMobile) {
+                user = await User.findOne({ mobile_number: normalizedMobile });
             }
-            if (!user.place && place) {
-                user.place = place.trim();
-                dirty = true;
-            }
-            if (!user.business && business) {
-                user.business = business.trim();
-                dirty = true;
-            }
-            if (dirty) {
-                await user.save();
+            
+            if (!user) {
+                user = await User.create({
+                    name: normalizedName || 'Unknown Customer',
+                    mobile_number: normalizedMobile || undefined,
+                    place: normalizedPlace || undefined,
+                    business: normalizedBusiness || undefined,
+                    email: `customer_${Date.now()}@mochingo.local`,
+                    google_id: `manual_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+                });
+            } else {
+                let dirty = false;
+                if (!user.name && normalizedName) {
+                    user.name = normalizedName;
+                    dirty = true;
+                }
+                if (!user.place && normalizedPlace) {
+                    user.place = normalizedPlace;
+                    dirty = true;
+                }
+                if (!user.business && normalizedBusiness) {
+                    user.business = normalizedBusiness;
+                    dirty = true;
+                }
+                if (dirty) {
+                    await user.save();
+                }
             }
         }
 
@@ -70,7 +75,7 @@ export class SalesService {
         const updateData: any = {
             status: 'assigned',
             manual_redirect_url: normalizedUrl,
-            owner_id: user._id,
+            owner_id: user ? user._id : null,
             assigned_by: staffId,
         };
 
