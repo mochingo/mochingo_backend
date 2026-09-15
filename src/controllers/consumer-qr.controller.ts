@@ -29,13 +29,19 @@ export const updateMyQR = async (req: Request, res: Response, next: NextFunction
     try {
         const userId = (req as any).user.id;
         const qrId = req.params.id;
-        const { destination_url } = req.body;
+        const { destination_url, qr_type, multi_links } = req.body;
         
-        if (!destination_url || typeof destination_url !== 'string') {
-            throw new Error('Destination URL is required');
+        if (qr_type === 'multi_link') {
+            if (!Array.isArray(multi_links) || multi_links.length === 0) {
+                throw new Error('multi_links array is required for multi_link qr_type');
+            }
+        } else {
+            if (!destination_url || typeof destination_url !== 'string') {
+                throw new Error('Destination URL is required');
+            }
         }
 
-        await consumerQRService.updateMyQR(userId, qrId, destination_url);
+        await consumerQRService.updateMyQR(userId, qrId, req.body);
         sendSuccess(res, null, 'QR successfully updated');
     } catch (error) {
         sendError(res, (error as Error).message, null, 400);

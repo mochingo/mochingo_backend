@@ -1,7 +1,13 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-// Mochingo simplified — no outlet/mall. Only manual redirect URL.
 export type DynamicQRStatus = 'assigned' | 'unassigned' | 'disabled';
+export type QRType = 'single' | 'multi_link';
+
+export interface IMultiLink {
+    platform: string;
+    url: string;
+    label?: string;
+}
 
 export interface IDynamicQR extends Document {
     token: string;
@@ -12,7 +18,9 @@ export interface IDynamicQR extends Document {
     batch_size?: number | null;
     batch_sequence?: number | null;
     status: DynamicQRStatus;
+    qr_type: QRType;
     manual_redirect_url?: string | null;
+    multi_links?: IMultiLink[];
     id_value?: string | null;                  // optional display/tracking identifier
     owner_id?: mongoose.Types.ObjectId | null;
     created_by?: mongoose.Types.ObjectId | null;
@@ -75,10 +83,25 @@ const DynamicQRSchema = new Schema<IDynamicQR>(
             default: 'unassigned',
             index: true,
         },
+        qr_type: {
+            type: String,
+            enum: ['single', 'multi_link'],
+            default: 'single',
+        },
         manual_redirect_url: {
             type: String,
             default: null,
             trim: true,
+        },
+        multi_links: {
+            type: [
+                {
+                    platform: { type: String, required: true },
+                    url: { type: String, required: true },
+                    label: { type: String, required: false },
+                },
+            ],
+            default: undefined,
         },
         id_value: {
             type: String,

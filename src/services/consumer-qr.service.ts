@@ -50,11 +50,13 @@ export class ConsumerQRService {
         }
 
         // Assign the QR
-        const normalizedUrl = normalizeUrl(dto.destination_url);
+        const normalizedUrl = dto.qr_type === 'single' && dto.destination_url ? normalizeUrl(dto.destination_url) : null;
 
         await dynamicQRRepository.updateById(String(qr._id), {
             status: 'assigned',
+            qr_type: dto.qr_type || 'single',
             manual_redirect_url: normalizedUrl,
+            multi_links: dto.qr_type === 'multi_link' ? dto.multi_links : undefined,
             owner_id: user._id,
             assigned_at: new Date(),
         });
@@ -67,24 +69,33 @@ export class ConsumerQRService {
             token: qr.token,
             label: qr.label,
             status: qr.status,
+            qr_type: qr.qr_type,
             manual_redirect_url: qr.manual_redirect_url,
+            multi_links: qr.multi_links,
             scan_count: qr.scan_count,
             created_at: qr.created_at,
             assigned_at: qr.assigned_at,
         }));
     }
 
-    async updateMyQR(userId: string, qrId: string, destinationUrl: string) {
+    async updateMyQR(userId: string, qrId: string, payload: any) {
         const qr = await dynamicQRRepository.findById(qrId);
         if (!qr) throw new Error('QR not found');
         if (String(qr.owner_id) !== String(userId)) {
             throw new Error('Unauthorized to edit this QR');
         }
 
-        const normalizedUrl = normalizeUrl(destinationUrl);
-        const updated = await dynamicQRRepository.updateById(qrId, {
-            manual_redirect_url: normalizedUrl,
-        });
+        const updates: any = {};
+        
+        if (payload.qr_type === 'multi_link') {
+            updates.qr_type = 'multi_link';
+            updates.multi_links = payload.multi_links;
+        } else if (payload.destination_url) {
+            updates.qr_type = 'single';
+            updates.manual_redirect_url = normalizeUrl(payload.destination_url);
+        }
+
+        const updated = await dynamicQRRepository.updateById(qrId, updates);
 
         return updated;
     }
