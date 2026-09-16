@@ -54,6 +54,8 @@ export interface DynamicQRResponseDto {
     batch_size: number | null;
     batch_sequence: number | null;
     status: 'assigned' | 'unassigned' | 'disabled';
+    qr_type?: 'single' | 'multi_link';
+    multi_links?: any[];
     manual_redirect_url: string | null;
     id_value: string | null;
     qr_url: string;            // permanent printed URL
@@ -106,6 +108,8 @@ export interface ListDynamicQRsResponseDto {
 export interface ResolveQRResponseDto {
     token: string;
     status: 'assigned' | 'unassigned' | 'disabled' | 'missing';
+    qr_type?: 'single' | 'multi_link';
+    multi_links?: any[];
     redirect_url: string;
     qr?: DynamicQRResponseDto;
     category_slug?: string;
