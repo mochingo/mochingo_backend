@@ -128,9 +128,55 @@ export const markDone = async (req: Request, res: Response): Promise<void> => {
             sendError(res, 'ids array is required', null, 400);
             return;
         }
-        await onboardingService.markDone(ids);
-        sendSuccess(res, null, `${ids.length} record(s) marked as done`);
+        const records = await onboardingService.markDone(ids);
+        sendSuccess(res, records, `${ids.length} records marked as done`);
     } catch (error: any) {
-        sendError(res, error.message);
+        sendError(res, error.message, null, 500);
+    }
+};
+
+import { IdCardTemplate } from '../models/IdCardTemplate.js';
+
+export const saveTemplate = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { name, cardW, cardH, frontFields, backFields } = req.body;
+        
+        if (!name) {
+            sendError(res, 'Template name is required', null, 400);
+            return;
+        }
+
+        // Limit to 5 templates
+        const count = await IdCardTemplate.countDocuments();
+        if (count >= 5) {
+            sendError(res, 'Maximum of 5 templates reached. Please delete an old template first.', null, 400);
+            return;
+        }
+
+        const template = new IdCardTemplate({ name, cardW, cardH, frontFields, backFields });
+        await template.save();
+        
+        sendSuccess(res, template, 'Template saved successfully', 201);
+    } catch (error: any) {
+        sendError(res, error.message, null, 500);
+    }
+};
+
+export const getTemplates = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const templates = await IdCardTemplate.find().sort({ createdAt: -1 });
+        sendSuccess(res, templates, 'Templates fetched successfully');
+    } catch (error: any) {
+        sendError(res, error.message, null, 500);
+    }
+};
+
+export const deleteTemplate = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+        await IdCardTemplate.findByIdAndDelete(id);
+        sendSuccess(res, null, 'Template deleted successfully');
+    } catch (error: any) {
+        sendError(res, error.message, null, 500);
     }
 };

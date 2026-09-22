@@ -12,11 +12,19 @@ router.use(adminAuth);
 // POST /api/admin/onboarding/by-ids   — fetch specific records by IDs (for builder)
 // PATCH /api/admin/onboarding/mark-downloaded
 // PATCH /api/admin/onboarding/mark-done
+// POST /api/admin/onboarding/templates
+// GET  /api/admin/onboarding/templates
+// DELETE /api/admin/onboarding/templates/:id
 
 router.get('/', onboardingController.getOnboardings);
 router.get('/count', onboardingController.getNewCount);
 router.post('/by-ids', onboardingController.getRecordsByIds);
 router.patch('/mark-downloaded', onboardingController.markDownloaded);
 router.patch('/mark-done', onboardingController.markDone);
+
+// Template routes
+router.post('/templates', onboardingController.saveTemplate);
+router.get('/templates', onboardingController.getTemplates);
+router.delete('/templates/:id', onboardingController.deleteTemplate);
 
 export default router;
