@@ -23,7 +23,8 @@ const canvasFieldSchema = new Schema({
     bold: { type: Boolean },
     italic: { type: Boolean },
     widthPct: { type: Number },
-    heightPct: { type: Number }
+    heightPct: { type: Number },
+    borderRadius: { type: Number }
 }, { _id: false });
 
 const IdCardTemplateSchema: Schema = new Schema(
