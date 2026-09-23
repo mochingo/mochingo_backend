@@ -24,7 +24,8 @@ const canvasFieldSchema = new Schema({
     italic: { type: Boolean },
     widthPct: { type: Number },
     heightPct: { type: Number },
-    borderRadius: { type: Number }
+    borderRadius: { type: Number },
+    overrideText: { type: String }
 }, { _id: false });
 
 const IdCardTemplateSchema: Schema = new Schema(

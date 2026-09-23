@@ -6,6 +6,7 @@ export class OnboardingService {
 
     async createRecord(data: {
         name: string;
+        professional_name?: string;
         qualification?: string;
         dob?: string;
         pulse_visit_id?: string;
@@ -17,6 +18,7 @@ export class OnboardingService {
     }) {
         return OnboardingRecord.create({
             name: data.name.trim(),
+            professional_name: data.professional_name?.trim() || null,
             qualification: data.qualification?.trim() || null,
             dob: data.dob?.trim() || null,
             pulse_visit_id: data.pulse_visit_id?.trim() || null,
@@ -33,6 +35,7 @@ export class OnboardingService {
 
     async updateByPulseVisitId(pulse_visit_id: string, data: {
         name?: string;
+        professional_name?: string;
         qualification?: string;
         dob?: string;
         registration_no?: string;
@@ -46,6 +49,7 @@ export class OnboardingService {
         // Only update fields that were explicitly provided in the request body
         const updates: Record<string, any> = {};
         if (data.name            !== undefined) updates.name            = data.name.trim();
+        if (data.professional_name!== undefined) updates.professional_name= data.professional_name?.trim() || null;
         if (data.qualification   !== undefined) updates.qualification   = data.qualification?.trim() || null;
         if (data.dob             !== undefined) updates.dob             = data.dob?.trim() || null;
         if (data.registration_no !== undefined) updates.registration_no = data.registration_no?.trim() || null;

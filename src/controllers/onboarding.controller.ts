@@ -8,6 +8,7 @@ export const receiveOnboarding = async (req: Request, res: Response): Promise<vo
     try {
         const {
             name,
+            professional_name,
             qualification,
             dob,
             pulse_visit_id,
@@ -25,6 +26,7 @@ export const receiveOnboarding = async (req: Request, res: Response): Promise<vo
 
         const record = await onboardingService.createRecord({
             name,
+            professional_name,
             qualification,
             dob,
             pulse_visit_id,
@@ -44,7 +46,7 @@ export const receiveOnboarding = async (req: Request, res: Response): Promise<vo
 // PUT /api/webhook/onboarding/update  — update existing record by pulse_visit_id
 export const updateOnboarding = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { pulse_visit_id, name, qualification, dob, registration_no, service_area, qr_link, photo_url } = req.body;
+        const { pulse_visit_id, name, professional_name, qualification, dob, registration_no, service_area, qr_link, photo_url } = req.body;
 
         if (!pulse_visit_id || typeof pulse_visit_id !== 'string' || !pulse_visit_id.trim()) {
             sendError(res, 'pulse_visit_id is required to identify the record', null, 400);
@@ -52,7 +54,7 @@ export const updateOnboarding = async (req: Request, res: Response): Promise<voi
         }
 
         const updated = await onboardingService.updateByPulseVisitId(pulse_visit_id, {
-            name, qualification, dob, registration_no, service_area, qr_link, photo_url,
+            name, professional_name, qualification, dob, registration_no, service_area, qr_link, photo_url,
         });
 
         if (!updated) {

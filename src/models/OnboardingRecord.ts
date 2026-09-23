@@ -5,6 +5,7 @@ export type OnboardingStatus = 'new' | 'downloaded' | 'done';
 export interface IOnboardingRecord extends Document {
     // ── ID Card Fields ──────────────────────────────────────────────────────────
     name: string;
+    professional_name?: string | null;
     qualification?: string | null;
     dob?: string | null;
     pulse_visit_id?: string | null;
@@ -36,6 +37,11 @@ const OnboardingRecordSchema = new Schema<IOnboardingRecord>(
         name: {
             type: String,
             required: true,
+            trim: true,
+        },
+        professional_name: {
+            type: String,
+            default: null,
             trim: true,
         },
         qualification: {
