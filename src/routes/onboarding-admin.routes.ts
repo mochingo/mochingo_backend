@@ -21,6 +21,7 @@ router.get('/count', onboardingController.getNewCount);
 router.post('/by-ids', onboardingController.getRecordsByIds);
 router.patch('/mark-downloaded', onboardingController.markDownloaded);
 router.patch('/mark-done', onboardingController.markDone);
+router.patch('/mark-active', onboardingController.markActive);
 
 // Template routes
 router.post('/templates', onboardingController.saveTemplate);

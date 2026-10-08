@@ -13,6 +13,7 @@ export interface IOnboardingRecord extends Document {
     service_area?: string | null;
     qr_link?: string | null;
     photo_url?: string | null;
+    category?: string | null;
 
     // ── To add a new field in the future:
     //    1. Add it here (e.g. blood_group?: string | null)
@@ -79,6 +80,12 @@ const OnboardingRecordSchema = new Schema<IOnboardingRecord>(
             type: String,
             default: null,
             trim: true,
+        },
+        category: {
+            type: String,
+            default: null,
+            trim: true,
+            index: true,
         },
 
         // ── Metadata ────────────────────────────────────────────────────────────

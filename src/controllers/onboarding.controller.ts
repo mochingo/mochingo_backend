@@ -16,6 +16,7 @@ export const receiveOnboarding = async (req: Request, res: Response): Promise<vo
             service_area,
             qr_link,
             photo_url,
+            category,
             source_app,
         } = req.body;
 
@@ -34,6 +35,7 @@ export const receiveOnboarding = async (req: Request, res: Response): Promise<vo
             service_area,
             qr_link,
             photo_url,
+            category,
             source_app,
         });
 
@@ -46,7 +48,7 @@ export const receiveOnboarding = async (req: Request, res: Response): Promise<vo
 // PUT /api/webhook/onboarding/update  — update existing record by pulse_visit_id
 export const updateOnboarding = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { pulse_visit_id, name, professional_name, qualification, dob, registration_no, service_area, qr_link, photo_url } = req.body;
+        const { pulse_visit_id, name, professional_name, qualification, dob, registration_no, service_area, qr_link, photo_url, category } = req.body;
 
         if (!pulse_visit_id || typeof pulse_visit_id !== 'string' || !pulse_visit_id.trim()) {
             sendError(res, 'pulse_visit_id is required to identify the record', null, 400);
@@ -54,7 +56,7 @@ export const updateOnboarding = async (req: Request, res: Response): Promise<voi
         }
 
         const updated = await onboardingService.updateByPulseVisitId(pulse_visit_id, {
-            name, professional_name, qualification, dob, registration_no, service_area, qr_link, photo_url,
+            name, professional_name, qualification, dob, registration_no, service_area, qr_link, photo_url, category
         });
 
         if (!updated) {
@@ -76,8 +78,9 @@ export const getOnboardings = async (req: Request, res: Response): Promise<void>
         const limit = Number(req.query.limit) || 100;
         const search = String(req.query.search || '');
         const status = String(req.query.status || '');
+        const category = String(req.query.category || '');
 
-        const result = await onboardingService.listRecords({ page, limit, search, status });
+        const result = await onboardingService.listRecords({ page, limit, search, status, category });
         sendSuccess(res, result);
     } catch (error: any) {
         sendError(res, error.message);
@@ -132,6 +135,20 @@ export const markDone = async (req: Request, res: Response): Promise<void> => {
         }
         const records = await onboardingService.markDone(ids);
         sendSuccess(res, records, `${ids.length} records marked as done`);
+    } catch (error: any) {
+        sendError(res, error.message, null, 500);
+    }
+};
+
+export const markActive = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { ids } = req.body;
+        if (!Array.isArray(ids) || ids.length === 0) {
+            sendError(res, 'ids array is required', null, 400);
+            return;
+        }
+        const records = await onboardingService.markActive(ids);
+        sendSuccess(res, records, `${ids.length} records marked as active`);
     } catch (error: any) {
         sendError(res, error.message, null, 500);
     }

@@ -14,6 +14,7 @@ export class OnboardingService {
         service_area?: string;
         qr_link?: string;
         photo_url?: string;
+        category?: string;
         source_app?: string;
     }) {
         return OnboardingRecord.create({
@@ -26,6 +27,7 @@ export class OnboardingService {
             service_area: data.service_area?.trim() || null,
             qr_link: data.qr_link?.trim() || null,
             photo_url: data.photo_url?.trim() || null,
+            category: data.category?.trim() || null,
             source_app: data.source_app?.trim() || null,
             status: 'new',
         });
@@ -42,6 +44,7 @@ export class OnboardingService {
         service_area?: string;
         qr_link?: string;
         photo_url?: string;
+        category?: string;
     }) {
         const record = await OnboardingRecord.findOne({ pulse_visit_id: pulse_visit_id.trim() });
         if (!record) return null;
@@ -56,6 +59,7 @@ export class OnboardingService {
         if (data.service_area    !== undefined) updates.service_area    = data.service_area?.trim() || null;
         if (data.qr_link         !== undefined) updates.qr_link         = data.qr_link?.trim() || null;
         if (data.photo_url       !== undefined) updates.photo_url       = data.photo_url?.trim() || null;
+        if (data.category        !== undefined) updates.category        = data.category?.trim() || null;
 
         Object.assign(record, updates);
         await record.save();
@@ -69,8 +73,9 @@ export class OnboardingService {
         page?: number;
         limit?: number;
         search?: string;
+        category?: string;
     }) {
-        const { page = 1, limit = 100, search = '', status } = opts;
+        const { page = 1, limit = 100, search = '', status, category } = opts;
 
         const query: Record<string, any> = {};
 
@@ -83,6 +88,10 @@ export class OnboardingService {
         } else {
             // Default: active tab = new + downloaded
             query.status = { $in: ['new', 'downloaded'] };
+        }
+
+        if (category) {
+            query.category = category;
         }
 
         if (search) {
@@ -128,6 +137,13 @@ export class OnboardingService {
         return OnboardingRecord.updateMany(
             { _id: { $in: ids } },
             { $set: { status: 'done', done_at: new Date() } }
+        );
+    }
+
+    async markActive(ids: string[]) {
+        return OnboardingRecord.updateMany(
+            { _id: { $in: ids } },
+            { $set: { status: 'new' }, $unset: { done_at: 1 } }
         );
     }
 
