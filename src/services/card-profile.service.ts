@@ -3,6 +3,18 @@ import { dynamicQRRepository } from '../repositories/dynamic-qr.repository.js';
 import User from '../models/User.js';
 import { SetupCardProfileDto } from '../dto/card-profile.dto.js';
 import { uploadToCloudinary } from '../utils/cloudinary.util.js';
+import { env } from '../config/env.js';
+
+// Safely parse FRONTEND_URL — avoids broken strings like "FRONTEND_URL=https:/..."
+const getCardFrontendBaseUrl = (): string => {
+    const raw = String(env.frontendUrl || 'https://www.mochingo.com').trim();
+    try {
+        const parsed = new URL(raw);
+        return `${parsed.protocol}//${parsed.host}`;
+    } catch {
+        return 'https://www.mochingo.com';
+    }
+};
 
 export interface CardProfileResponse {
     profile: ICardProfile;
@@ -89,7 +101,7 @@ class CardProfileService {
         }
 
         // 5. Update Dynamic QR to assigned with card destination
-        const frontendBaseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const frontendBaseUrl = getCardFrontendBaseUrl();
         const redirectUrl = `${frontendBaseUrl}/card/${dto.token}`;
 
         await dynamicQRRepository.updateById(String(qr._id), {

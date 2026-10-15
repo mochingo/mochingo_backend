@@ -3,6 +3,17 @@ import { dynamicQRRepository } from '../repositories/dynamic-qr.repository.js';
 import User from '../models/User.js';
 import { SetupPetProfileDto } from '../dto/pet-profile.dto.js';
 import { uploadToCloudinary } from '../utils/cloudinary.util.js';
+import { env } from '../config/env.js';
+
+const getPetFrontendBaseUrl = (): string => {
+    const raw = String(env.frontendUrl || 'https://www.mochingo.com').trim();
+    try {
+        const parsed = new URL(raw);
+        return `${parsed.protocol}//${parsed.host}`;
+    } catch {
+        return 'https://www.mochingo.com';
+    }
+};
 
 class PetProfileService {
     async setupPetProfile(userId: string, dto: SetupPetProfileDto, imageBuffer?: Buffer): Promise<IPetProfile> {
@@ -61,7 +72,7 @@ class PetProfileService {
         }
 
         // Update QR Code to assigned
-        const frontendBaseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const frontendBaseUrl = getPetFrontendBaseUrl();
         const redirectUrl = `${frontendBaseUrl}/pet/${dto.token}`;
         
         await dynamicQRRepository.updateById(String(qr._id), {
